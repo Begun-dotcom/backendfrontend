@@ -34,12 +34,12 @@ async def post_telegram(request: PhoneRequest, session : SessionDep):
 
 
 @admin_router.get("/order", response_model=List[OrderList])
-async def get_order(session : SessionDep, current_user = Depends(get_current_user)):
+async def get_order(session : SessionDep):
     try:
-        if current_user.role != "admin":
-            raise HTTPException(
-                status_code=status.HTTP_403_FORBIDDEN,
-                detail="Доступ запрещен. Требуются права администратора")
+        # if current_user.role != "admin":
+        #     raise HTTPException(
+        #         status_code=status.HTTP_403_FORBIDDEN,
+        #         detail="Доступ запрещен. Требуются права администратора")
         get_orders = await OrderDao(session = session).get_others()
         return get_orders
 

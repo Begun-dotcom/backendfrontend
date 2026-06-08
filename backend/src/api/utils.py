@@ -71,9 +71,7 @@ async def send_email(request):
         return False
 
 async def get_current_user(session : SessionDep):
-
     user = await UserDao(session=session).get_admin(AdminLog(login="username"))
-
     if not user:
         raise HTTPException(401, "Пользователь не найден")
 
