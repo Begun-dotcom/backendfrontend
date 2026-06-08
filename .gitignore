@@ -1,0 +1,15 @@
+.idea
+venv/
+node_modules/
+
+certbot/conf/*
+!certbot/conf/.gitkeep
+certbot/www/*
+!certbot/www/.gitkeep
+data/*
+!data/.gitkeep
+
+# Env files
+.env.db
+backend/.env
+frontend/.env
