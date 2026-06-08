@@ -1,10 +1,10 @@
 from typing import List
 
-from fastapi import APIRouter, HTTPException
-
+from fastapi import APIRouter, HTTPException, Depends
+from starlette import status
 
 from src.api.schemas import PhoneRequest, OrderList
-from src.api.utils import send_telegram, send_email
+from src.api.utils import send_telegram, send_email, get_current_user
 from src.core.database import SessionDep
 from src.dao.dao import OrderDao
 
@@ -34,10 +34,14 @@ async def post_telegram(request: PhoneRequest, session : SessionDep):
 
 
 @admin_router.get("/order", response_model=List[OrderList])
-async def get_order(session : SessionDep):
+async def get_order(session : SessionDep, current_user = Depends(get_current_user)):
     try:
-       get_orders = await OrderDao(session = session).get_others()
-       return get_orders
+        if current_user.role != "admin":
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Доступ запрещен. Требуются права администратора")
+        get_orders = await OrderDao(session = session).get_others()
+        return get_orders
 
     except Exception as e:
         print(f"Ошибка: {e}")

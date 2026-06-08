@@ -41,3 +41,14 @@ class BaseDao(Generic[T]):
         except Exception as e:
             logger.error(f"Ошибка получения данных из {self.model.__name__}: {e}")
             return None
+
+    async def get_admin(self, filters: BaseModel | None = None):
+        try:
+            filter_dict = filters.model_dump(exclude_unset=True) if filters else {}
+            query = select(self.model).filter_by(**filter_dict)
+            result = await self._session.execute(query)
+            logger.info(f"Данные из {self.model.__name__} с параметрами {filters} получены успешно")
+            return result.scalar_one_or_none()
+        except Exception as e:
+            logger.error(f"Ошибка получения данных из {self.model.__name__}: {e}")
+            return None

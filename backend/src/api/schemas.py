@@ -16,3 +16,6 @@ class OrderList(BaseModel):
 
     class Config:
         from_attributes = True
+
+class AdminLog(BaseModel):
+    login: str

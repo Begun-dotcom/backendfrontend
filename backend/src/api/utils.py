@@ -4,8 +4,15 @@ from email.message import EmailMessage
 import aiohttp
 import smtplib
 
-from src.config import setting
+from fastapi import Depends, HTTPException
+from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 
+from src.api.schemas import AdminLog
+from src.config import setting
+from src.core.database import SessionDep
+from src.dao.dao import UserDao
+
+security = HTTPBearer()
 
 async def send_telegram(request):
     try:
@@ -62,3 +69,12 @@ async def send_email(request):
     except Exception as e:
         print(f"Ошибка: {e}")
         return False
+
+async def get_current_user(session : SessionDep):
+
+    user = await UserDao(session=session).get_admin(AdminLog(login="username"))
+
+    if not user:
+        raise HTTPException(401, "Пользователь не найден")
+
+    return user
